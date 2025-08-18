@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.CoreEntites.EmergencyEntities;
 using Domain.Entities.IdentityEntities;
+using SharedData.Enums;
 
 namespace Domain.Entities.Reporting
 {
@@ -22,6 +23,7 @@ namespace Domain.Entities.Reporting
 
         public int RequestId { get; set; }
         public EmergencyRequest Request { get; set; }
+        public ReportState reportState { get; set; } = ReportState.Waiting;
         #endregion
     }
 }

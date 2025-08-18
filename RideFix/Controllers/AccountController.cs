@@ -54,10 +54,10 @@ namespace RideFix.Controllers
 
             if (token == null)
                 return Unauthorized("Invalid email or password");
-            if (string.Equals(token, "banned", StringComparison.OrdinalIgnoreCase))
+            if (token.IsBanned == true)
                 return Forbid();
 
-            return Ok(new { token });
+            return Ok( token );
         }
         [HttpGet("check-email")]
         public async Task<IActionResult> CheckEmailExists(string email)
@@ -75,6 +75,14 @@ namespace RideFix.Controllers
             return Ok(ApiResponse<ReadUserDetailsDTO>.SuccessResponse(request, "User details"));
         }
 
+        [HttpPost("upload-profile-pic")]
+        public async Task<IActionResult> UploadProfilePic(IFormFile file)
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            var imageUrl = await _authService.UploadProfilePicAsync(userId, file);
+
+            return Ok(new { Message = "Profile picture uploaded successfully", Url = imageUrl });
+        }
 
     }
 }

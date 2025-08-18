@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAbstraction;
+using ServiceAbstraction.CoreServicesAbstractions.E_Commerce_Abstraction;
 using SharedData.DTOs.E_CommerceDTOs;
 using SharedData.Wrapper;
 using System;
@@ -82,6 +83,21 @@ namespace Presentation.Controllers
                 return NotFound($"No products found with name {productName}.");
             }
             return Ok(ApiResponse<List<ProductBreifDTO>>.SuccessResponse(products, "Requests successfully created"));
+        }
+        [HttpPost]
+        [Route("{productId}/rate")]
+        public async Task<IActionResult> addRate(int productId, [FromBody] RateDTO rateInput ) {
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("User is not authenticated.");
+
+            await serviceManager.rateService.AddRateAsync(
+                productId,
+                rateInput.Value,
+                rateInput.Comment,
+                userId
+            );
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Rate added successfully!"));
         }
     }
 }

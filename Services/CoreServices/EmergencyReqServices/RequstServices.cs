@@ -164,6 +164,7 @@ namespace Service.CoreServices.EmergencyReqServices
         #endregion
 
         #endregion
+
         public async Task CompleteRequest(int requestId)
         {
             var emergencyRequest = await unitOfWork.GetRepository<EmergencyRequest, int>().GetByIdAsync(requestId);
@@ -262,6 +263,10 @@ namespace Service.CoreServices.EmergencyReqServices
 
         public async Task<PreRequestDTO> CreateRequestAsync(CreatePreRequestDTO request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+            }
 
             var spec = new CarOwnerSpecification(request);
             var user = await unitOfWork.GetRepository<CarOwner, int>().GetByIdAsync(spec);
@@ -269,6 +274,10 @@ namespace Service.CoreServices.EmergencyReqServices
             if (user == null)
             {
                 throw new CarOwnerNotFoundException();
+            }
+            if( user.ApplicationUser.Coins < 50 )
+            {
+                throw new NoSufeciantAmountOfMoneyBadRequestException();
             }
             var filteredTechnicians = await techService.GetTechniciansByFilterAsync(request);
             if (filteredTechnicians == null || !filteredTechnicians.Any())

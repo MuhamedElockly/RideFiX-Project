@@ -7,6 +7,7 @@ using Service.CoreServices.CarMservices;
 using Service.CoreServices.ChatServices;
 using Service.CoreServices.E_Commerce;
 using Service.CoreServices.EmergencyReqServices;
+using Service.CoreServices.PaymentService;
 using Service.CoreServices.ReportsServices;
 using ServiceAbstraction;
 using ServiceAbstraction.CoreServicesAbstractions;
@@ -56,13 +57,14 @@ namespace Services
             Services.AddScoped<IProductsService, ProductsService>();
             Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
-
+            Services.AddScoped<IOrderService , OrderService>();
+            Services.AddScoped<IRateService, RateService>();
 
             Services.AddScoped<IReportsServices, ReportsServices>();
 
             Services.AddScoped<IAdminService, AdminService>();
             Services.AddScoped<IActivityReportService, ActivityReportService>();
-
+            Services.AddScoped<IPaymentService, PaymentService>();
 
 
             return Services;

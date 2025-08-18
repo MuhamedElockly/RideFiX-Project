@@ -36,13 +36,15 @@ namespace ServiceAbstraction
         IProductCategoryService productCategoryService { get; }
         IProductsService productsService { get; }
         IShoppingCartService shoppingCartService { get; }
+        IOrderService orderService { get; }
 
         IReportsServices reportsServices { get; }
 
         IAdminService adminService { get; }
         IActivityReportService activityReportService { get; }
+        IRateService rateService { get; }
 
 
-
+        public IPaymentService paymentService { get; }
     }
 }

@@ -20,6 +20,8 @@ namespace Service.Specification_Implementation.E_CommerceSpecifications
         {
             AddInclude(x => x.Products);
             AddInclude(x => x.Products.Select(p => p.Category.Name));
+
+
         }
     }
 }

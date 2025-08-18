@@ -1,5 +1,6 @@
 ﻿using SharedData.DTOs.Admin.TechnicianCategory;
 using SharedData.DTOs.Admin.Users;
+using SharedData.DTOs.ReportDtos;
 
 namespace ServiceAbstraction.CoreServicesAbstractions.Admin
 {
@@ -25,6 +26,8 @@ namespace ServiceAbstraction.CoreServicesAbstractions.Admin
         Task UpdateCategoryAsync(int id, UpdateTCategoryDTO dto);
         Task DeleteCategoryAsync(int id);
         Task<object> GetDashboardStatisticsAsync();
+        // report
+        Task<object> GetReportsAsync();     
 
     }
 }

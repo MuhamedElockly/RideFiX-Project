@@ -1,7 +1,9 @@
 ﻿using Domain.Entities.CoreEntites.CarMaintenance_Entities;
 using Domain.Entities.CoreEntites.EmergencyEntities;
+using Domain.Entities.credit;
 using Domain.Entities.e_Commerce;
 using Domain.Entities.IdentityEntities;
+using Domain.Entities.PaymentEntites;
 using Domain.Entities.Reporting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -44,5 +46,9 @@ namespace Presistence.Data
         public DbSet<Category> pCategory { get; set; }
         public DbSet<Report> reports { get; set; }
         public DbSet<Rate> ProductRate { get; set; }
+        public DbSet<CoinTopUp> CoinTopUps { get; set; }
+
+        public DbSet<CoinChargeEntity> CoinChargeEntities { get; set; }
+
     }
 }

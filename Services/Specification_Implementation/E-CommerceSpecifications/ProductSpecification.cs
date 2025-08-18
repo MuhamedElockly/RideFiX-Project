@@ -13,6 +13,9 @@ namespace Service.Specification_Implementation.E_CommerceSpecifications
         public ProductSpecification(int ProductId) : base(s => s.Id == ProductId)
         {
             AddInclude(x => x.ProductRates);
+            AddInclude("ProductRates.ApplicationUser");
+
+
         }
     }
 }

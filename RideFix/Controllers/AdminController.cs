@@ -1,9 +1,11 @@
 ﻿using Domain.Entities.CoreEntites.EmergencyEntities;
 using Microsoft.AspNetCore.Mvc;
+using Presistence.Migrations;
 using ServiceAbstraction;
 using SharedData.DTOs.ActivityDTOs;
 using SharedData.DTOs.Admin.TechnicianCategory;
 using SharedData.DTOs.Admin.Users;
+using SharedData.DTOs.ReportDtos;
 using SharedData.Wrapper;
 using System;
 using System.Collections.Generic;
@@ -173,6 +175,13 @@ namespace RideFix.Controllers
         {
             var stats = await serviceManager.adminService.GetDashboardStatisticsAsync();
             return Ok(ApiResponse<object>.SuccessResponse(stats,"successfull request"));
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllReports()
+        {
+            var results=await serviceManager.adminService.GetReportsAsync();
+          
+            return Ok(ApiResponse<object>.SuccessResponse(results,"success response"));
         }
 
     }

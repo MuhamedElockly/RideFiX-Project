@@ -14,7 +14,11 @@ namespace Service.Specification_Implementation.RequestSpecifications
         public AcceptReverseRequestSpecification(int requestID) : base(s => s.Id == requestID)
         {
             AddInclude(s => s.EmergencyRequest);
-            
+            AddInclude(s => s.Technician);
+            AddInclude(s => s.Technician.ApplicationUser);
+            AddInclude(s => s.EmergencyRequest.CarOwner);
+            AddInclude(s => s.EmergencyRequest.CarOwner.ApplicationUser);
+
         }
     }
 }

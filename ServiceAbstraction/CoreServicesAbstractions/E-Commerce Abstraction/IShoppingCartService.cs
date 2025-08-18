@@ -14,5 +14,6 @@ namespace ServiceAbstraction.CoreServicesAbstractions.E_Commerce_Abstraction
         public Task ClearCartAsync();
         public Task RemoveItemAsync(int productId);
         public Task UpdateItemQuantityAsync(int productId, int newQuantity);
+        public string GetUserId();
     }
 }

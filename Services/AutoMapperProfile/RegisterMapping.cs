@@ -15,6 +15,7 @@ namespace Service.AutoMapperProfile
 
             CreateMap<RegisterStep1Dto, ApplicationUser>()
            .ForMember(d => d.UserName, s => s.MapFrom(s => s.Email));
+           
 
 
         }

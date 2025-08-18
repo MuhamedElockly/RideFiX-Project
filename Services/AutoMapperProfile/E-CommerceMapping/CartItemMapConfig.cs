@@ -18,6 +18,9 @@ namespace Service.AutoMapperProfile.E_CommerceMapping
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src =>
+                                  src.ProductRates.Any() ? src.ProductRates.Average(r => r.Value) : 0))
+                .ForMember(dest => dest.TotalRatings, opt => opt.MapFrom(src => src.ProductRates.Count))
                 .ReverseMap();
         }
     }

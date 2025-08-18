@@ -26,5 +26,9 @@ namespace Service.Specification_Implementation.TechnicianSpecifications
         {
             AddInclude(t => t.ApplicationUser);
         }
+        public TechnicianWithAppUserSpec(DateTime startDate, DateTime endDate) : base(t => t.ApplicationUser.CreatedAt   >= startDate && t.ApplicationUser.CreatedAt < endDate)
+        {
+            AddInclude(t => t.ApplicationUser);
+        }
     }
 }

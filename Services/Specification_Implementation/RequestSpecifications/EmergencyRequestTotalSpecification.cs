@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.CoreEntites.EmergencyEntities;
 using Services.Specification_Implementation;
+using SharedData.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,9 @@ namespace Service.Specification_Implementation.RequestSpecifications
 
         }
         public EmergencyRequestTotalSpecification() : base() 
+        {
+        }
+        public EmergencyRequestTotalSpecification(RequestState requestState) : base(e=>e.EmergencyRequestTechnicians.Any(emr=>emr.CallStatus==requestState))
         {
         }
     }

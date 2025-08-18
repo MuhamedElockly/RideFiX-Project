@@ -7,7 +7,10 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Contracts;
+using Domain.Entities.CoreEntites.EmergencyEntities;
 using Domain.Entities.IdentityEntities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +34,7 @@ namespace Service.CoreServices.Account
                 new Claim("Id", roleEntityId.ToString()),
                 new Claim("Email" , user.Email) , 
                 new Claim ("Name" , user.Name) ,
+                new Claim("ProfilePicUrl", user.ProfilePic?? ""),
             };
             foreach(var role in roles)
             claims.Add(new Claim("Role", role));
@@ -49,7 +53,8 @@ namespace Service.CoreServices.Account
             var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
 
             return stringToken.ToString();
-
         }
+
+       
     }
 }

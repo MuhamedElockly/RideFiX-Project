@@ -27,7 +27,7 @@ namespace Service.Specification_Implementation.TechnicianSpecifications
         }
         public TechniciansSpecification() : base()
         {
-
+            AddInclude(t => t.ApplicationUser);
         }
 
     }

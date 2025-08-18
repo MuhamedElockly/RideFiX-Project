@@ -21,11 +21,15 @@ namespace Service.Specification_Implementation.E_CommerceSpecifications
             {
                 AddCriteria(s => s.Price <= maxPrice.Value);
             }
+
             if (categoryId.HasValue)
             {
                 AddCriteria(s => s.CategoryId == categoryId.Value);
             }
+
             AddInclude(s => s.Category);
+            AddInclude(s => s.ProductRates);
+
             SetOrderBy(s => s.Price);
 
             if (pageNumber.HasValue)
@@ -34,6 +38,12 @@ namespace Service.Specification_Implementation.E_CommerceSpecifications
                 int take = itemPerPage ?? 10;
                 ApplyPaging(skip, take);
             }
+            
+            else if (itemPerPage.HasValue)
+            {
+                ApplyPaging(0, itemPerPage.Value);
+            }
+          
             else
             {
                 ApplyPaging(0, 10);

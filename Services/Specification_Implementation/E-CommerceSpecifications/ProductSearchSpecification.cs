@@ -13,6 +13,8 @@ namespace Service.Specification_Implementation.E_CommerceSpecifications
         public ProductSearchSpecification(string productName)
             : base(p => p.Name.ToUpper().Contains(productName.Trim().ToUpper()))
         {
+            AddInclude(p => p.ProductRates);
+
         }
     }
   

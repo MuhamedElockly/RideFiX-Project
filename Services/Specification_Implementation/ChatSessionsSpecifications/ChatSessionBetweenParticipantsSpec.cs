@@ -13,6 +13,7 @@ namespace Service.Specification_Implementation.ChatSessionsSpecifications
         public ChatSessionBetweenParticipantsSpec(int carOwnerId, int technicianId)
             : base(cs => cs.CarOwnerId == carOwnerId && cs.TechnicianId == technicianId)
         {
+            AddInclude(c => c.massages);
         }
     }
 }

@@ -170,13 +170,32 @@ namespace Service.CoreServices.CarMservices
         {
             var MRepo = unitOfWork.GetRepository<MaintenanceTypes, int>();
             var spec = new MaintenanceSummarySpecification(CarId);
-            var maintenanceDataQ = MRepo.GetAllQueryable(spec);
+            var maintenanceDataQ = await MRepo.GetAllQueryable(spec).ToListAsync();
 
-            var maintenanceList = await maintenanceDataQ.Select(mt => new
+            var maintenanceList = maintenanceDataQ.Select(mt => new
             {
                 mt.Name,
                 LastRecord = mt.CarMaintenanceRecords.FirstOrDefault()
-            }).ToListAsync();
+            });
+
+            //var maintenanceList = await maintenanceDataQ
+            //    .Select(mt => new
+            //    {
+            //        mt.Name,
+            //        LastRecord = mt.CarMaintenanceRecords
+            //            .Where(r => r.CarId == CarId)
+            //            .OrderByDescending(r => r.PerformedAt)
+            //            .Select(r => new
+            //            {
+            //                r.Id,
+            //                r.PerformedAt,
+            //                r.CarKMsAtTime,
+            //                r.NextMaintenanceDue
+            //            })
+            //            .FirstOrDefault()
+            //    })
+            //    .ToListAsync();
+
 
             var SummaryDtoList = new List<MaintenanceSummaryDTO>();
 

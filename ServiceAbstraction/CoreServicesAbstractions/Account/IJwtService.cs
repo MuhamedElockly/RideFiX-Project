@@ -11,5 +11,6 @@ namespace ServiceAbstraction.CoreServicesAbstractions.Account
     public interface IJwtService
     {
         string generateToken (JwtTokenDto user , IList<string>roles , int roleEntityId);
+
     }
 }

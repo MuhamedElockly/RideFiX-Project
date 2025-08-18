@@ -57,6 +57,10 @@ namespace Service.CoreServices.EmergencyReqServices
             {
                 throw new ReverseArgumentException("This request has already been accepted by another technician.");
             }
+            // take tax
+            reverseRequest.Technician.ApplicationUser.Coins -= 50;
+            reverseRequest.EmergencyRequest.CarOwner.ApplicationUser.Coins -= 50;
+            //////////
             reverseRequest.EmergencyRequest.TechnicianId = reverseRequest.TechnicianId;
             reverseRequest.CallState = RequestState.Answered;
 
@@ -72,6 +76,7 @@ namespace Service.CoreServices.EmergencyReqServices
                 chatSessionService.update(chatSession);
                 
             }
+
            
             await unitOfWork.SaveChangesAsync();
 

@@ -33,34 +33,93 @@ namespace Service.CoreServices.E_Commerce
             this.productsService = productsService;
             this.mapper = mapper;
         }
+        //public async Task AddToCartAsync(int productId, int quantity)
+        //{
+        //    if (productId <= 0 || quantity <= 0)
+        //    {
+        //        throw new ShoppingCartArgumentException("Product ID and quantity must be greater than zero.");
+        //    }
+        //    string userId = GetUserId();
+        //    string cartKey = $"cart:{userId}";
+
+        //    var Cart = await GetCartItemsAsync();
+        //    var existingItem = Cart.FirstOrDefault(item => item.ProductId == productId);
+        //    var product = await productsService.GetProductByIdAsync(productId);
+        //    if (product == null)
+        //    {
+        //        throw new InvalidOperationException($"Product with ID {productId} not found.");
+        //    }
+
+        //    if ( product.Quantity >= quantity) {
+        //        if (existingItem != null)
+        //        {
+
+        //            existingItem.Quantity += quantity;
+        //        }
+        //        else
+        //        {
+
+        //            product.Quantity = quantity;
+        //            Cart.Add(product);
+        //        }
+
+
+
+        //    }
+
+        //    var serializedCart = JsonSerializer.Serialize(Cart);
+        //    await database.StringSetAsync(cartKey, serializedCart);
+        //}
         public async Task AddToCartAsync(int productId, int quantity)
         {
             if (productId <= 0 || quantity <= 0)
             {
                 throw new ShoppingCartArgumentException("Product ID and quantity must be greater than zero.");
             }
+
             string userId = GetUserId();
             string cartKey = $"cart:{userId}";
 
-            var Cart = await GetCartItemsAsync();
-            var existingItem = Cart.FirstOrDefault(item => item.ProductId == productId);
+            var cart = await GetCartItemsAsync();
+            var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
+
+            var product = await productsService.GetProductByIdAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException($"Product with ID {productId} not found.");
+            }
+
             if (existingItem != null)
             {
-                existingItem.Quantity += quantity;
+            
+                int newQuantity = existingItem.Quantity + quantity;
+
+                if (newQuantity > product.Quantity)
+                {
+                    throw new InvalidOperationException(
+                        $"Not enough stock for product {product.ProductName}. Available: {product.Quantity}"
+                    );
+                }
+
+                existingItem.Quantity = newQuantity;
             }
             else
             {
-                var product = await productsService.GetProductByIdAsync(productId);
-                if (product == null)
+                if (quantity > product.Quantity)
                 {
-                    throw new InvalidOperationException($"Product with ID {productId} not found.");
+                    throw new InvalidOperationException(
+                        $"Not enough stock for product {product.ProductName}. Available: {product.Quantity}"
+                    );
                 }
-                product.Quantity = quantity;
-                Cart.Add(product);
+
+                product.Quantity = quantity; 
+                cart.Add(product);
             }
-            var serializedCart = JsonSerializer.Serialize(Cart);
+
+            var serializedCart = JsonSerializer.Serialize(cart);
             await database.StringSetAsync(cartKey, serializedCart);
         }
+
 
         public Task ClearCartAsync()
         {
@@ -130,7 +189,7 @@ namespace Service.CoreServices.E_Commerce
             }
 
         }
-        private string GetUserId ()
+        public string GetUserId ()
         {
             var user = httpContextAccessor.HttpContext?.User;
             if (user == null || !user.Identity.IsAuthenticated)

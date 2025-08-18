@@ -23,10 +23,11 @@ namespace Domain.Entities.IdentityEntities
         public bool IsActivated { get; set; }=true;
         public bool isDeleted {  get; set; }=false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int Coins { get; set; } = 0;
 
 
-        //public string ProfilePic { get; set; }
-        //public bool IsProfilePicUploaded { get; set; } = false;
+        public string? ProfilePic { get; set; }
+        public bool IsProfilePicUploaded { get; set; } = false;
         public ICollection<Message> messages { get; set; } = new HashSet<Message>();
         public ICollection<UserConnectionIds> connections { get; set; } = new HashSet<UserConnectionIds>();
 

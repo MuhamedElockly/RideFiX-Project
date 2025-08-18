@@ -8,6 +8,7 @@ using Domain.Contracts;
 using Domain.Entities.CoreEntites.EmergencyEntities;
 using Domain.Entities.IdentityEntities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -50,14 +51,37 @@ namespace Service.CoreServices.Account
             var Email = await _userManager.FindByEmailAsync(email);
             return (Email != null);
         }
+        public async Task<string> UploadProfilePicAsync(string userId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("No file uploaded.");
 
-        public async Task<string> LoginAsync(LoginDto dto )
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var imageUrl = await _fileService.SaveFileAsync(file, "ProfilePics");
+            user.ProfilePic = imageUrl;
+            user.IsProfilePicUploaded = true;
+
+            await _userManager.UpdateAsync(user);
+
+            return imageUrl;
+        }
+
+
+        public async Task<LoginResultDto> LoginAsync(LoginDto dto )
         {
             int   roleEntityId = 0;
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password) ) 
                 return null;
-            if (!user.IsActivated) return "banned";
+            if (!user.IsActivated) return new LoginResultDto
+            {
+                Token = null,
+                RequiresProfilePic = false,
+                IsBanned = true
+            };
             var roles = await _userManager.GetRolesAsync(user);
 
             if (roles.Contains("CarOwner"))
@@ -76,9 +100,17 @@ namespace Service.CoreServices.Account
             {
                 Id = user.Id,
                 Email = user.Email,
-                Name = user.Name
+                Name = user.Name,
+                ProfilePic = user.ProfilePic
             };
-            return _jwtService.generateToken(newUser, roles , roleEntityId);
+            var token = _jwtService.generateToken(newUser, roles , roleEntityId);
+            //return _jwtService.generateToken(newUser, roles, roleEntityId);
+
+            return new LoginResultDto
+            {
+                Token = token,
+                RequiresProfilePic = !user.IsProfilePicUploaded
+            };
         }
 
         public async Task<IdentityResult> RegisterStep1Async(RegisterStep1Dto dto)
@@ -244,5 +276,9 @@ namespace Service.CoreServices.Account
 
 
         }
+
+       
+        
+
     }
 }

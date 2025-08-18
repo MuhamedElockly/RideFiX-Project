@@ -45,7 +45,8 @@ namespace Service.CoreServices.E_Commerce
             {
                 throw new ProductArgumentException("Product ID must be greater than zero.");
             }
-            var Product = await unitOfWork.GetRepository<Product, int>().GetByIdAsync(productId);
+            var spec = new ProductSpecification(productId);
+            var Product = await unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
             if (Product == null)
             {
                 throw new ProductArgumentException($"Product with ID {productId} not found.");
@@ -54,21 +55,69 @@ namespace Service.CoreServices.E_Commerce
             return productDto;
         }
 
+        //public async Task<ProductWithRatesDTO> GetProductDetailsByIdAsync(int productId)
+        //{
+        //    if (productId <= 0)
+        //    {
+        //        throw new ProductArgumentException("Product ID must be greater than zero.");
+        //    }
+        //    var spec = new ProductSpecification(productId);
+        //    var Product = await unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
+        //    if (Product == null)
+        //    {
+        //        throw new ProductArgumentException($"Product with ID {productId} not found.");
+        //    }
+        //    var productDto = mapper.Map<ProductWithRatesDTO>(Product);
+        //    return productDto;
+        //}
+
         public async Task<ProductWithRatesDTO> GetProductDetailsByIdAsync(int productId)
         {
             if (productId <= 0)
             {
                 throw new ProductArgumentException("Product ID must be greater than zero.");
             }
+
             var spec = new ProductSpecification(productId);
-            var Product = await unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
-            if (Product == null)
+            var product = await unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
+            Console.WriteLine(product.Id);
+            if (product == null)
             {
                 throw new ProductArgumentException($"Product with ID {productId} not found.");
             }
-            var productDto = mapper.Map<ProductWithRatesDTO>(Product);
+
+            var productDto = mapper.Map<ProductWithRatesDTO>(product);
+
+            if (product.ProductRates != null && product.ProductRates.Any())
+            {
+                productDto.TotalRatings = product.ProductRates.Count;
+                productDto.AverageRating = product.ProductRates.Average(r => r.Value);
+
+                productDto.ProductRates = product.ProductRates.Select(r => new RateDTO
+                {
+                    Value = r.Value,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt,
+                    UserName = r.ApplicationUser.Name,
+                    UserId = r.ApplicationUser.Id
+
+                }).ToList();
+            }
+
             return productDto;
         }
+
+
+
+
+
+
+
+
+
+
+
+
 
         public async Task<List<ProductBreifDTO>> ProductSearchByName(string productName)
         {
@@ -85,5 +134,7 @@ namespace Service.CoreServices.E_Commerce
             var productsDto = mapper.Map<List<ProductBreifDTO>>(products);
             return productsDto;
         }
+
+
     }
 }
