@@ -30,12 +30,14 @@ namespace Service.CoreServices.E_Commerce
             this.mapper = mapper;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(string location)
+        public async Task<OrderDto> CreateOrderAsync(string location , string userId)
         {
             if (string.IsNullOrWhiteSpace(location))
             {
                 throw new ShoppingCartArgumentException("Location must be provided.");
             }
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ShoppingCartArgumentException("UserId must be provided.");
 
             var cartItems = await shoppingCartService.GetCartItemsAsync();
             if (cartItems == null || !cartItems.Any())
@@ -47,7 +49,8 @@ namespace Service.CoreServices.E_Commerce
             {
                 location = location,
                 orderState = OrderStatus.Pending,
-                totalPrice = 0
+                totalPrice = 0 ,
+                UserId=userId
             };
 
             foreach (var item in cartItems)
@@ -85,16 +88,17 @@ namespace Service.CoreServices.E_Commerce
             return orderDto;
         }
 
-        public async Task<List<OrderDto>> GetUserOrdersAsync()
-        {
-            var spec = new OrdersWithItemsSpecification();
-            var orders = await unitOfWork.GetRepository<Domain.Entities.e_Commerce.Order, int>().GetAllAsync(spec);
+   public async Task<List<OrderDto>> GetUserOrdersAsync(string userId)
+{
+            var spec = new OrdersByUserSpecification(userId);
+    var orders = await unitOfWork.GetRepository<Domain.Entities.e_Commerce.Order, int>().GetAllAsync(spec);
 
-            if (orders == null || !orders.Any())
-                return new List<OrderDto>();
+    if (orders == null || !orders.Any())
+        return new List<OrderDto>();
 
-            return mapper.Map<List<OrderDto>>(orders);
-        }
+    return mapper.Map<List<OrderDto>>(orders);
+}
+
 
         public async Task<OrderDto> GetOrderByIdAsync(int orderId)
         {

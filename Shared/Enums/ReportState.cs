@@ -8,8 +8,8 @@ namespace SharedData.Enums
 {
     public enum ReportState
     {
-        Waiting,
-        Rejected,
-        Approved,
+        Waiting=1,
+        Rejected=2,
+        Approved=3,
     }
 }

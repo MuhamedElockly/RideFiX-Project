@@ -3,6 +3,8 @@ using ServiceAbstraction;
 using SharedData.DTOs.E_CommerceDTOs;
 using SharedData.Wrapper;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Presentation.Controllers
@@ -18,25 +20,16 @@ namespace Presentation.Controllers
             serviceManager = _serviceManager;
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
+        [HttpGet("my-orders")]
+        public async Task<IActionResult> GetMyOrders()
         {
-            if (string.IsNullOrWhiteSpace(dto.Location))
-            {
-                return BadRequest("Location is required.");
-            }
+            var userId = User.FindFirstValue("userId"); 
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not found.");
 
-            var order = await serviceManager.orderService.CreateOrderAsync(dto.Location);
-            return Ok(ApiResponse<OrderDto>.SuccessResponse(order, "Order created successfully."));
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> GetUserOrders()
-        {
-            var orders = await serviceManager.orderService.GetUserOrdersAsync();
-            if (orders == null || orders.Count == 0)
-                return NotFound("No orders found for this user.");
+            var orders = await serviceManager.orderService.GetUserOrdersAsync(userId);
+            if (orders == null || !orders.Any())
+                return NotFound(ApiResponse<List<OrderDto>>.FailResponse("No orders found."));
 
             return Ok(ApiResponse<List<OrderDto>>.SuccessResponse(orders, "Orders retrieved successfully."));
         }
@@ -44,14 +37,32 @@ namespace Presentation.Controllers
         [HttpGet("{orderId:int}")]
         public async Task<IActionResult> GetOrderById(int orderId)
         {
-            if (orderId <= 0)
-                return BadRequest("Order ID must be greater than zero.");
+            var userId = User.FindFirstValue("userId"); 
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not found.");
 
             var order = await serviceManager.orderService.GetOrderByIdAsync(orderId);
-            if (order == null)
-                return NotFound($"Order with ID {orderId} not found.");
+
+      
 
             return Ok(ApiResponse<OrderDto>.SuccessResponse(order, "Order retrieved successfully."));
         }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not found.");
+
+            if (string.IsNullOrWhiteSpace(dto.Location))
+                return BadRequest("Location is required.");
+
+            var order = await serviceManager.orderService.CreateOrderAsync(dto.Location, userId);
+
+            return Ok(ApiResponse<OrderDto>.SuccessResponse(order, "Order created successfully."));
+        }
     }
+
+   
 }

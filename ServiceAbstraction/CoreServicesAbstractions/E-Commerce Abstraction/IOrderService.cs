@@ -6,8 +6,8 @@ namespace ServiceAbstraction.CoreServicesAbstractions.E_Commerce_Abstraction
 {
     public interface IOrderService
     {
-        Task<OrderDto> CreateOrderAsync(string location);
-        Task<List<OrderDto>> GetUserOrdersAsync();
+        Task<OrderDto> CreateOrderAsync(string location , string userId );
+        Task<List<OrderDto>> GetUserOrdersAsync(string userId);
         Task<OrderDto> GetOrderByIdAsync(int orderId);
     }
 }

@@ -183,6 +183,12 @@ namespace RideFix.Controllers
           
             return Ok(ApiResponse<object>.SuccessResponse(results,"success response"));
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateReportState([FromBody] UpdateReportDTO dTO)
+        {
+            await serviceManager.adminService.UpdateReportStateAsync(dTO);
+            return Ok(ApiResponse<bool>.SuccessResponse(true, "success response"));
+        }
 
     }
 }

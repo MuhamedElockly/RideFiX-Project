@@ -13,8 +13,6 @@ namespace SharedData.Enums
         Waiting = 3,
         Cancelled = 4,
         Completed = 5,
-        // for request in home page , once the tech apply the state for request will be applied 
-        // that state will help in front to change the state based on
-        Applied = 6
+       
     }
 }
