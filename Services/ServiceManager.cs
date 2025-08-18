@@ -80,7 +80,7 @@ namespace Services
                     IReportsServices reportsServices,
 
 
-                    IReportsServices reportsServices,
+          //          IReportsServices reportsServices,
 
                     IAdminService adminService,
                     IActivityReportService activityReportService)
