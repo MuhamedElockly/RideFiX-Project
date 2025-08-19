@@ -6,6 +6,7 @@ using SharedData.DTOs.ActivityDTOs;
 using SharedData.DTOs.Admin.TechnicianCategory;
 using SharedData.DTOs.Admin.Users;
 using SharedData.DTOs.ReportDtos;
+using SharedData.DTOs.TechnicianDTOs;
 using SharedData.Wrapper;
 using System;
 using System.Collections.Generic;
@@ -137,12 +138,16 @@ namespace RideFix.Controllers
         }
 
         [HttpGet("users-count")]
+        [EndpointSummary("Get the count of users ")]
         public async Task<IActionResult> GetUsersCount()
         {
             var counts = await serviceManager.adminService.GetUsersCountAsync();
             return Ok(counts);
         }
         [HttpGet("requests-count")]
+        [EndpointSummary("Get the count of all requests and waiting")]
+        [ProducesResponseType(200, Type = typeof(ApiResponse<object>))]
+        [ProducesResponseType(400, Type = typeof(ApiResponse<object>))]
         public async Task<IActionResult> GetRequestsCount()
         {
             var counts = await serviceManager.adminService.GetrequestsCountAsync();
@@ -156,13 +161,13 @@ namespace RideFix.Controllers
         {
             try
             {
-                if (hoursBack <= 0 || hoursBack > 168) 
+                if (hoursBack <= 0 || hoursBack > 168)
                 {
                     return BadRequest(ApiResponse<CategorizedActivityReportDTO>.FailResponse("Hours back must be between 1 and 168 (7 days)"));
                 }
 
                 var result = await serviceManager.activityReportService.GetCategorizedActivitiesAsync(hoursBack);
-                
+
                 return Ok(ApiResponse<CategorizedActivityReportDTO>.SuccessResponse(result, "تم جلب النشاطات المصنفة بنجاح"));
             }
             catch (Exception ex)
@@ -171,24 +176,45 @@ namespace RideFix.Controllers
             }
         }
         [HttpGet("dashboard-statistics")]
+        [EndpointSummary("Get dashboard statistics for all request state and and incearse per month for users and count of tech adn car owner in precent")]
+        [ProducesResponseType(200, Type = typeof(ApiResponse<object>))]
+        [ProducesResponseType(400, Type = typeof(ApiResponse<object>))]
         public async Task<IActionResult> GetDashboardStatistics()
         {
             var stats = await serviceManager.adminService.GetDashboardStatisticsAsync();
-            return Ok(ApiResponse<object>.SuccessResponse(stats,"successfull request"));
+            return Ok(ApiResponse<object>.SuccessResponse(stats, "successfull request"));
         }
         [HttpGet]
+      //  [Route("reports")]
+        [EndpointSummary("Get all reports")]
+        [ProducesResponseType(200, Type = typeof(ApiResponse<object>))]
+        [ProducesResponseType(400, Type = typeof(ApiResponse<object>))]
         public async Task<IActionResult> GetAllReports()
         {
-            var results=await serviceManager.adminService.GetReportsAsync();
-          
-            return Ok(ApiResponse<object>.SuccessResponse(results,"success response"));
+            var results = await serviceManager.adminService.GetReportsAsync();
+
+            return Ok(ApiResponse<object>.SuccessResponse(results, "success response"));
         }
-        [HttpPost]
+        [HttpPost("updateReportState")]
+        [EndpointSummary("Update the state of a report")]
+        [ProducesResponseType(200, Type = typeof(ApiResponse<bool>))]
+        [ProducesResponseType(500, Type = typeof(ApiResponse<bool>))]
         public async Task<IActionResult> UpdateReportState([FromBody] UpdateReportDTO dTO)
         {
             await serviceManager.adminService.UpdateReportStateAsync(dTO);
             return Ok(ApiResponse<bool>.SuccessResponse(true, "success response"));
         }
+        [HttpGet("technician-reviews/{technicianId}")]
+        
+        [EndpointSummary("Get all reviews for a specific technician")]
+        [ProducesResponseType(200, Type = typeof(ApiResponse<List<ReadTechnicianReviewDTO>>))]
+        [ProducesResponseType(404, Type = typeof(ApiResponse<string>))]
+        public async Task<IActionResult> GetTechnicianReviews(int technicianId)
+        {
+            var reviews = await serviceManager.adminService.GetTechnicianReviewAsync(technicianId);
+            return Ok(ApiResponse<List<ReadTechnicianReviewDTO>>.SuccessResponse(reviews, "Successful request"));
 
+
+        }
     }
 }

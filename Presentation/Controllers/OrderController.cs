@@ -51,7 +51,9 @@ namespace Presentation.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue("userId");
+
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("User not found.");
 

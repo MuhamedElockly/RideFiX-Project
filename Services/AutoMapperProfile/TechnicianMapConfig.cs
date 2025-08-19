@@ -30,6 +30,10 @@ namespace Service.AutoMapperProfile
                 ? (int)Math.Round(src.reviews.Average(r => r.Rate))
                 : 0
              ));
+          
+         
+
+
         }
     }
 }

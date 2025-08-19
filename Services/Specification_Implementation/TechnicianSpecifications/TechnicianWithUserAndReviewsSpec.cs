@@ -21,6 +21,10 @@ namespace Service.Specification_Implementation.TechnicianSpecifications
             {
                
                 AddInclude(t => t.ApplicationUser);
+                AddInclude(t => t.reviews);
+                AddInclude(t => t.reviews.Select(r=>r.CarOwner.ApplicationUser));
+                
+                
             }
         }
     }

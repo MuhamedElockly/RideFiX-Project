@@ -10,6 +10,7 @@ using Service.Exception_Implementation.NotFoundExceptions;
 using Service.Specification_Implementation.CarOwnerSpecifications;
 using Service.Specification_Implementation.ChatSessionsSpecifications;
 using Service.Specification_Implementation.RequestSpecifications;
+using Service.Specification_Implementation.ReviewSpecification;
 using Service.Specification_Implementation.TechnicianSpecifications;
 using ServiceAbstraction.CoreServicesAbstractions.Admin;
 using Services.Specification_Implementation.Emergency;
@@ -17,6 +18,7 @@ using SharedData.DTOs.Admin.TechnicianCategory;
 using SharedData.DTOs.Admin.Users;
 using SharedData.DTOs.MessegeDTOs;
 using SharedData.DTOs.ReportDtos;
+using SharedData.DTOs.TechnicianDTOs;
 using SharedData.Enums;
 using Stripe;
 
@@ -85,6 +87,17 @@ namespace Service.CoreServices.Admin
         #endregion
 
         #region Users
+        public async Task<List<ReadTechnicianReviewDTO>> GetTechnicianReviewAsync(int technicianId)
+        {
+            var spec = new ReviewSpecification(technicianId);
+            var repo = unitOfWork.GetRepository<Domain.Entities.CoreEntites.EmergencyEntities.Review, int>();
+            var result = await repo.GetAllAsync(spec);
+
+            if (result == null || !result.Any())
+                throw new ReviewsNotFoundException("there is no reviews for this technician");
+            return mapper.Map<List<ReadTechnicianReviewDTO>>(result);
+
+        }
         public async Task<object> GetUsersCountAsync()
         {
             var techniciansCount = await unitOfWork
@@ -343,7 +356,7 @@ namespace Service.CoreServices.Admin
                     ReportId = report.Id,
                     TechnicianName = (reportingTech ?? reportedTech)?.ApplicationUser.Name,
                     CarOwnerName = (reportingCarOwner ?? reportedCarOwner)?.ApplicationUser.Name,
-                    
+
 
 
                     Messages = chatList.SelectMany(c => c.massages).Select(m => new ReadMessageDTO
@@ -358,8 +371,8 @@ namespace Service.CoreServices.Admin
                     }).ToList()
                 });
             }
-        
-           
+
+
 
             return new { Reports = dtos };
         }
@@ -373,7 +386,7 @@ namespace Service.CoreServices.Admin
                 case ReportState.Approved:
                     {
                         report.reportState = ReportState.Approved;
-                       
+
                     }
 
 
@@ -381,18 +394,20 @@ namespace Service.CoreServices.Admin
                 case ReportState.Rejected:
                     {
                         report.reportState = ReportState.Rejected;
-                        
+
                     }
                     break;
                 default:
-          
-                        throw new TechnicianBadRequestException($"Unsupported RequestState '{reportDTO.ReportState}'.");
-                    
-                   
+
+                    throw new TechnicianBadRequestException($"Unsupported RequestState '{reportDTO.ReportState}'.");
+
+
 
             }
             await unitOfWork.SaveChangesAsync();
         }
+
+
 
         #endregion
 
